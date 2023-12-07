@@ -1,0 +1,27 @@
+services:
+
+  backend:
+    build:
+      context: ./Wolontariat_back_Django
+      target: builder
+      dockerfile: Dockerfile.django
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./Wolontariat_front_Angular
+      target: builder
+      dockerfile: Dockerfile.angular
+    ports:
+      - "4200:4200"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:4200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
