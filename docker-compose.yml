@@ -1,12 +1,44 @@
 services:
 
+  postgres:
+    container_name: postgres
+    image: postgres:latest
+    env_file: ./Wolontariat_back_Django/PostgreSQL/postgres.env
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5432"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    env_file: ./Wolontariat_back_Django/PostgreSQL/pgadmin.env
+    ports:
+      - "5050:80"
+    restart: always
+    depends_on: 
+      postgres:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
   backend:
     build:
       context: ./Wolontariat_back_Django
       target: builder
-      dockerfile: Dockerfile.django
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    depends_on: 
+      postgres:
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8000"]
       interval: 30s
@@ -17,9 +49,12 @@ services:
     build:
       context: ./Wolontariat_front_Angular
       target: builder
-      dockerfile: Dockerfile.angular
+      dockerfile: Dockerfile
     ports:
       - "4200:4200"
+    depends_on: 
+      backend:
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:4200"]
       interval: 30s
