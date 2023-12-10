@@ -1,16 +1,11 @@
-from django.http import HttpRequest, HttpResponse
-from .models import User
-from .serializer import UserSerializer
-from rest_framework import generics
+from django.shortcuts import render, redirect
+from django.contrib.auth import logout
 
 
-# GET all users
-class UserList(generics.ListCreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+def login(request):
+    return render(request, 'login.html')
 
 
-# GET user by id
-class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+def logout_view(request):
+    logout(request)
+    return redirect('/')
